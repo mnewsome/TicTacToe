@@ -1,14 +1,9 @@
 #! usr/bin/env/python
 
-# Written by Malcolm Newsome -- Canditate for 8th Light Software Apprenticeship 
-#
-# Contact:  847.732.7641(cell) or malcolm.newsome@g.gmail.com
-
-
 class Board(object):
 
     def __init__(self):
-        self.space = {
+        self.spaces = {
                  '1': ' ', 
                  '2': ' ',
                  '3': ' ',
@@ -24,8 +19,7 @@ class Board(object):
         self.edges = ['2', '4', '6', '8']
         self.corners = ['1', '3', '7', '9']
         self.computer_mark = 'O'
-        self.player_mark = 'X'
-        
+
         # (space to check, space to check, move)
         self.possible_wins = (
                      ('5', '1', '9'),
@@ -54,9 +48,10 @@ class Board(object):
                      ('8', '9', '7'),
                      )
 
+
     def update(self, move, player_mark):
         """ Updates the current state of the board"""
-        self.space[move] = player_mark
+        self.spaces[move] = player_mark
 
 
     def display(self):
@@ -68,31 +63,27 @@ class Board(object):
         \t{four}\t|\t{five}\t|\t{six}
         ------------------------------------------------
         \t{one}\t|\t{two}\t|\t{three}
-        """.format(one=self.space['1'], two=self.space['2'], three=self.space['3'],
-                   four=self.space['4'], five=self.space['5'], six=self.space['6'],
-                   seven=self.space['7'], eight=self.space['8'], nine=self.space['9'])
+        """.format(one=self.spaces['1'], two=self.spaces['2'], three=self.spaces['3'],
+                   four=self.spaces['4'], five=self.spaces['5'], six=self.spaces['6'],
+                   seven=self.spaces['7'], eight=self.spaces['8'], nine=self.spaces['9'])
         
         print board
 
 
-    def get_available_spaces(self):
+    def available_spaces(self):
         """ Returns list of available moves """
         available_spaces = []
-        for key,value in self.space.iteritems():
+        for key,value in self.spaces.iteritems():
             if value == ' ':
                 available_spaces.append(key)
         return sorted(available_spaces)
 
     def available_edges(self, available_spaces):
-        for edge in self.edges:
-            if edge not in available_spaces:
-                self.edges.remove(edge)
+        self.edges = [edge for edge in self.edges if edge in available_spaces]
         return self.edges
     
     def available_corners(self, available_spaces):
-        for corner in self.corners:
-            if corner not in available_spaces:
-                self.corners.remove(corner)
+        self.corners = [corner for corner in self.corners if corner in available_spaces]
         return self.corners
 
     def check_for_win(self, row):
@@ -101,14 +92,14 @@ class Board(object):
 
 
     def get_winner (self):
-        bottom_row = [self.space['1'], self.space['2'], self.space['3']]
-        middle_row = [self.space['4'], self.space['5'], self.space['6']]
-        top_row = [self.space['7'], self.space['8'], self.space['9']]
-        left_column = [self.space['7'], self.space['4'], self.space['1']]
-        middle_column = [self.space['8'], self.space['5'], self.space['2']]
-        right_column = [self.space['9'], self.space['6'], self.space['3']]
-        left_diagonal = [self.space['7'], self.space['5'], self.space['3']]
-        right_diagonal = [self.space['9'], self.space['5'], self.space['1']]
+        bottom_row = [self.spaces['1'], self.spaces['2'], self.spaces['3']]
+        middle_row = [self.spaces['4'], self.spaces['5'], self.spaces['6']]
+        top_row = [self.spaces['7'], self.spaces['8'], self.spaces['9']]
+        left_column = [self.spaces['7'], self.spaces['4'], self.spaces['1']]
+        middle_column = [self.spaces['8'], self.spaces['5'], self.spaces['2']]
+        right_column = [self.spaces['9'], self.spaces['6'], self.spaces['3']]
+        left_diagonal = [self.spaces['7'], self.spaces['5'], self.spaces['3']]
+        right_diagonal = [self.spaces['9'], self.spaces['5'], self.spaces['1']]
         
         all_combinations = [
                             bottom_row, 
@@ -128,6 +119,9 @@ class Board(object):
         
         return winner
 
+
+
+
 class Player(object):
 
     def __init__(self):
@@ -140,7 +134,6 @@ class Player(object):
 
     def move(self, available_spaces):
         move = ''
-
         if self.is_first_move(available_spaces):
             print "\nMake your first move...\nYou will be 'X'"
             while not self.is_move_valid(move, available_spaces):
@@ -155,11 +148,10 @@ class Player(object):
 
 
     def is_first_move(self, available_spaces):
+        """ Returns true if it is player's first move. Else false. """
         return len(available_spaces) == 9
 
 
     def is_move_valid(self, selection, available_spaces):
         """ Returns true if player selects an available space. Else false. """
         return selection in available_spaces
-
-

@@ -1,10 +1,6 @@
 #! usr/bin/env/python
 
-# Written by Malcolm Newsome -- Canditate for 8th Light Software Apprenticeship 
-#
-# Contact:  847.732.7641(cell) or malcolm.newsome@g.gmail.com
-
-from tic_tac_toe import Board, Player
+from src.tic_tac_toe import Board, Player
 import random
 
 
@@ -32,22 +28,23 @@ def game_over(winner_mark):
     return exit()
 
 
-def counter_first_move(player_first_move, center, corner):
+def counter_first_move(player_first_move, center, corners):
     if player_first_move == '5':
-        computer_move = random.choice(corner)
+        computer_move = random.choice(corners)
     else:
         computer_move = center
 
     return computer_move
 
 
-def counter_second_move(player_second_move, edge, corner):
-    if player_second_move not in corner:
-        computer_move = random.choice(edge)
+def counter_second_move(player_second_move, edges, corners):
+    if player_second_move not in corners:
+        computer_move = random.choice(edges)
     else:
-        computer_move = random.choice(corner)
+        computer_move = random.choice(corners)
 
     return computer_move
+
 
 def computer_move(available_spaces):
     if len(available_spaces) == 0:
@@ -65,11 +62,12 @@ def prevent_win(space, player_mark, possible_wins):
             
     return space_to_update
 
+
 def go_for_win(space, computer_mark, possible_wins):
     """ Computer will take the win if it can. """
     space_to_update = None
     for pw in possible_wins:
-        if (space[pw[0]] == computer_mark and space[pw[1]]) == computer_mark and space[pw[2]] == ' ':
+        if space[pw[0]] == computer_mark and space[pw[1]] == computer_mark and space[pw[2]] == ' ':
             space_to_update = pw[2]
 
     return space_to_update
@@ -81,34 +79,35 @@ if __name__ == '__main__':
     p = Player()
     b = Board()
 
-    first_move = p.move(b.get_available_spaces())
+    first_move = p.move(b.available_spaces())
     b.update(first_move, p.player_mark)
-    counter_first = counter_first_move(first_move, b.center, b.available_corners(b.get_available_spaces()))
+    counter_first = counter_first_move(first_move, 
+                                       b.center, 
+                                       b.available_corners(b.available_spaces()))
     b.update(counter_first, b.computer_mark)
     b.display()
 
-    second_move = p.move(b.get_available_spaces())
+    second_move = p.move(b.available_spaces())
     b.update(second_move, p.player_mark)
-    prevent = prevent_win(b.space, p.player_mark, b.possible_wins)
+    prevent = prevent_win(b.spaces, p.player_mark, b.possible_wins)
     if prevent is None:
-        print second_move
-        print b.available_edges(b.get_available_spaces())
-        print b.available_corners(b.get_available_spaces())
-        counter_second = counter_second_move(second_move, b.available_edges(b.get_available_spaces()), b.available_corners(b.get_available_spaces()))
+        counter_second = counter_second_move(second_move, 
+                                             b.available_edges(b.available_spaces()), 
+                                             b.available_corners(b.available_spaces()))
         b.update(counter_second, b.computer_mark)
     else:
         b.update(prevent, b.computer_mark)
     b.display()
     
-    for space in b.get_available_spaces():
-        player_move = p.move(b.get_available_spaces())
+    for space in b.available_spaces():
+        player_move = p.move(b.available_spaces())
         b.update(player_move, p.player_mark)
         # go for win here
-        take_win = go_for_win(b.space, b.computer_mark, b.possible_wins)
+        take_win = go_for_win(b.spaces, b.computer_mark, b.possible_wins)
         if take_win is None:
-            prevent = prevent_win(b.space, p.player_mark, b.possible_wins)
+            prevent = prevent_win(b.spaces, p.player_mark, b.possible_wins)
             if prevent is None:
-                cm = computer_move(b.get_available_spaces())
+                cm = computer_move(b.available_spaces())
                 if cm is None:
                     winner = None
                     b.display()
