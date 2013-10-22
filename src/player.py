@@ -1,8 +1,10 @@
 #! usr/bin/env/python
 import random
 from ui import ConsoleUI
+from board import Board
 
 console = ConsoleUI()
+b = Board()
 
 class Player(object):
     """ Human Player """
@@ -17,7 +19,7 @@ class Player(object):
             move = console.get_input(prompt)
             return move
         else:
-            prompt = "\nWhere would you like to go next? >>"
+            prompt = "\nWhere would you like to go next? >> "
             move = console.get_input(prompt)
             return move
 
@@ -39,12 +41,15 @@ class ComputerPlayer(Player):
 
     def counter_second_move(self, player_first_move, player_second_move, edges, corners, check_edges):
         computer_move = ''
-        if player_first_move not in edges and player_second_move not in edges:
+        if b.is_edge(player_first_move) and b.is_edge(player_second_move):
             for e in check_edges:
                 if e[0] not in edges and e[1] not in edges:
                     computer_move = e[2]
         elif player_second_move not in corners:
-            computer_move = random.choice(edges)
+            if player_first_move is '5':
+                computer_move = random.choice(corners)
+            else:
+                computer_move = random.choice(edges)
         else:
             computer_move = random.choice(corners)
         return computer_move

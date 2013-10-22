@@ -39,11 +39,12 @@ def set_marks():
     while player_mark_choice not in mark_choices:
         prompt = "Choose your game piece: {0}".format(mark_choices)
         player_mark_choice = console.get_input(prompt).upper()
-        if player_mark_choice == 'X':
-            computer_mark = 'O'
-        else:
-            computer_mark = 'X'
-        return dict(player_mark=player_mark_choice, computer_mark=computer_mark)
+    if player_mark_choice == 'X':
+        computer_mark = 'O'
+    else:
+        computer_mark = 'X'
+    return dict(player_mark=player_mark_choice, computer_mark=computer_mark)
+
 
 
 if __name__ == '__main__':
@@ -53,40 +54,20 @@ if __name__ == '__main__':
     c = ComputerPlayer(mark["computer_mark"])
     b = Board()
 
-    first_move = p.move(b.is_first_move(b.available_spaces()))
-    while not b.is_move_valid(first_move, b.available_spaces()):
-        first_move = p.move(b.is_first_move(b.available_spaces()))   
-    b.update(first_move, p.mark)
-    counter_first = c.counter_first_move(first_move, 
-                                       b.center, 
-                                       b.available_corners())
-    b.update(counter_first, c.mark)
+    first_move = player_move()
+    counter_move(first_move)
     b.display()
+    second_move = player_move()
 
-
-    second_move = p.move(b.is_first_move(b.available_spaces()))
-    while not b.is_move_valid(second_move, b.available_spaces()):
-        second_move = p.move(b.is_first_move(b.available_spaces()))    
-    b.update(second_move, p.mark)
     prevent = c.prevent_win(b.spaces, p.mark, b.possible_wins)
     if prevent is None:
-        counter_second = c.counter_second_move(first_move,
-                                             second_move, 
-                                             b.available_edges(), 
-                                             b.available_corners(),
-                                             b.check_edges,
-                                             )
-        b.update(counter_second, c.mark)
+        counter = counter_move(first_move, second_move)
     else:
         b.update(prevent, c.mark)
     b.display()
-    
+
     for space in b.available_spaces():
-        player_move = p.move(b.is_first_move(b.available_spaces()))
-        while not b.is_move_valid(player_move, b.available_spaces()):
-            player_move = p.move(b.is_first_move(b.available_spaces()))
-        
-        b.update(player_move, p.mark)
+        player_move()
         # go for win here
         take_win = c.go_for_win(b.spaces, c.mark, b.possible_wins)
         if take_win is None:
@@ -107,12 +88,7 @@ if __name__ == '__main__':
                 b.update(prevent, c.mark)
                 b.display()
         else:
+            b.update(take_win, c.mark)
             winner = b.get_winner()
-            if winner == p.mark:
-                b.display()
-                game_over(winner, player_mark=p.mark)
-            else:             
-                b.update(take_win, c.mark)
-                winner = b.get_winner()
-                b.display()
-                game_over(winner)
+            b.display()
+            game_over(winner)

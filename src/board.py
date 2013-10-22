@@ -92,6 +92,11 @@ class Board(object):
         available_spaces= self.available_spaces()
         self.edges = [edge for edge in self.edges if edge in available_spaces]
         return self.edges
+    
+    def is_edge(self, selection):
+        """ Returns true if selected space in an edge"""
+        edges = ('2','4', '6', '8')
+        return selection in edges
 
     def available_corners(self):
         available_spaces= self.available_spaces()
