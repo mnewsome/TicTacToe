@@ -45,7 +45,28 @@ def set_marks():
         computer_mark = 'X'
     return dict(player_mark=player_mark_choice, computer_mark=computer_mark)
 
+def player_move():
+    move = ''
+    while not b.is_move_valid(move, b.available_spaces()):
+        move = p.move(b.is_first_move(b.available_spaces()))
+    b.update(move, p.mark)
+    return move
 
+def counter_move(first_move, second_move=None):
+    if second_move is None:
+        counter = c.counter_first_move(first_move, 
+                                       b.center, 
+                                       b.available_corners())
+        b.update(counter, c.mark)
+    else:
+        counter = c.counter_second_move(first_move,
+                                         second_move, 
+                                         b.available_edges(), 
+                                         b.available_corners(),
+                                         b.check_edges,
+                                         )
+        b.update(counter, c.mark)
+    return counter
 
 if __name__ == '__main__':
     start_new_game()
